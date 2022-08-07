@@ -33,3 +33,28 @@ export class SmallNetwork implements Network {
   }
 }
 
+export class BigNetwork implements Network {
+  private readonly scope: Construct;
+  private readonly compartment: IdentityCompartment;
+  vcn?: CoreVcn;
+  constructor(_scope: Construct, _compartment: IdentityCompartment) {
+    this.scope = _scope;
+    this.compartment = _compartment;
+  }
+  public createVcn(): CoreVcn {
+    this.vcn = new CoreVcn(this.scope, "vcn", {
+      compartmentId: this.compartment.id,
+      cidrBlock: "10.0.0.0/16",
+    });
+    return this.vcn;
+  }
+
+  public createSubnet(): CoreSubnet {
+    return new CoreSubnet(this.scope, "subnet", {
+      compartmentId: this.compartment.id,
+      cidrBlock: "10.0.0.0/24",
+      vcnId: this.vcn?.id ?? "",
+    });
+  }
+}
+
