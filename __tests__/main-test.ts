@@ -1,10 +1,42 @@
 import "cdktf/lib/testing/adapters/jest"; // Load types for expect matchers
-// import { Testing } from "cdktf";
+import { Testing } from "cdktf";
+import MyStack from "../stack";
+
+import { IdentityCompartment } from "../.gen/providers/oci/identity-compartment";
+import { CoreVcn } from "../.gen/providers/oci/core-vcn";
+import { CoreSubnet } from "../.gen/providers/oci/core-subnet";
 
 describe("My CDKTF Application", () => {
   // The tests below are example tests, you can find more information at
   // https://cdk.tf/testing
-  it.todo("should be tested");
+
+  it("should contains a compartment", () => {
+    const app = Testing.app({ stubVersion: false });
+    const stack = new MyStack(app, "oci-stack", 5);
+    const synth = Testing.synth(stack);
+    expect(synth).toHaveResourceWithProperties(IdentityCompartment, {
+      name: "oci-cpt",
+    });
+  });
+
+  it("should contains a vcn", () => {
+    const app = Testing.app({ stubVersion: false });
+    const stack = new MyStack(app, "oci-stack", 5);
+    const synth = Testing.synth(stack);
+    expect(synth).toHaveResource(CoreVcn);
+    /*.toHaveResourceWithProperties(CoreVcn, {
+      cidrBlock: "oci-cpt",
+    });*/
+  });
+  it("should contains a subnet", () => {
+    const app = Testing.app({ stubVersion: false });
+    const stack = new MyStack(app, "oci-stack", 5);
+    const synth = Testing.synth(stack);
+    expect(synth).toHaveResource(CoreSubnet);
+    /*.toHaveResourceWithProperties(CoreVcn, {
+      cidrBlock: "oci-cpt",
+    });*/
+  });
 
   // // All Unit tests test the synthesised terraform code, it does not create real-world resources
   // describe("Unit testing using assertions", () => {
@@ -85,3 +117,4 @@ describe("My CDKTF Application", () => {
   //   });
   // });
 });
+
